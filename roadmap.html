@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lộ trình của tôi - Primux THPT</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { 
+                    colors: { "primary-deep": "#1e3a8a", "primary-main": "#2563eb", "primary-light": "#60a5fa" }, 
+                    fontFamily: { sans: ["Be Vietnam Pro", "sans-serif"] } 
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #f8fbff; }
+        .card-shadow { box-shadow: 0 10px 30px -5px rgba(30, 64, 175, 0.06); }
+        .gold-glow { text-shadow: 0 4px 15px rgba(217, 119, 6, 0.4); }
+        .gold-box-shadow { box-shadow: 0 15px 35px -10px rgba(30, 58, 138, 0.2); border: 1px solid rgba(147, 197, 253, 0.5); }
+        .popup-backdrop { opacity: 0; pointer-events: none; transition: opacity 0.35s ease; }
+        .popup-backdrop.active { opacity: 1; pointer-events: auto; }
+        .popup-box { transform: scale(0.85); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .popup-backdrop.active .popup-box { transform: scale(1); }
+        .page-transition-overlay { position: fixed; inset: 0; background-color: #1e3a8a; z-index: 9999; pointer-events: none; opacity: 1; transition: opacity 0.35s ease; }
+        .page-transition-overlay.hidden-overlay { opacity: 0; }
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-[#f4f8ff] text-slate-900 min-h-screen flex flex-col md:flex-row antialiased relative overflow-x-hidden">
+    <div id="pageOverlay" class="page-transition-overlay"></div>
+
+    <div id="mobileSidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden opacity-0 transition-opacity duration-300 md:hidden" onclick="toggleSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside id="mainSidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-white border-r border-blue-100 flex flex-col shrink-0 card-shadow transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 h-screen sidebar-scroll overflow-y-auto">
+        <div class="flex-1">
+            <div class="p-6 border-b border-blue-50 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-lg shadow-md">P</div>
+                    <div>
+                        <span class="text-xl font-black text-blue-950 block leading-none">PRIMUX</span>
+                        <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest block">THPT Quốc Gia · 2027</span>
+                    </div>
+                </div>
+                <button onclick="toggleSidebar()" class="md:hidden p-1.5 text-slate-400 hover:text-red-500 rounded-lg bg-slate-50">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+            <nav class="p-4 space-y-1.5">
+                <div class="text-[11px] font-extrabold text-slate-400 px-3 py-2 uppercase tracking-wider">Không gian học</div>
+                <a href="index.html" class="nav-link flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-blue-50 font-semibold transition-all">
+                    <span class="material-symbols-outlined text-[20px]">grid_view</span> 
+                    <span class="text-sm">Tổng quan</span>
+                </a>
+                <a href="elite.html" class="nav-link flex items-center gap-3 px-3.5 py-3 rounded-xl text-blue-900 bg-amber-50 border border-amber-200 hover:bg-amber-100 font-extrabold transition-all group">
+                    <span class="material-symbols-outlined text-[20px] text-amber-500" style="font-variation-settings: 'FILL' 1;">stars</span> 
+                    <span class="text-sm">Gói Primux Elite</span>
+                </a>
+                <a href="exam.html" class="nav-link flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-blue-50 font-semibold transition-all">
+                    <span class="material-symbols-outlined text-[20px]">menu_book</span> 
+                    <span class="text-sm">Luyện đề</span>
+                </a>
+                <a href="knowledge.html" class="nav-link flex items-center justify-between px-3.5 py-3 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-blue-50 font-semibold transition-all">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[20px]">auto_stories</span> 
+                        <span class="text-sm">Kho kiến thức</span>
+                    </div>
+                    <span id="sidebarKnowledgeBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-black uppercase shadow-sm">ELITE</span>
+                </a>
+                <a href="analytics.html" class="nav-link flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-blue-50 font-semibold transition-all">
+                    <span class="material-symbols-outlined text-[20px]">insights</span>
+                    <span class="text-sm">Phân tích</span>
+                </a>
+                <div class="text-[11px] font-extrabold text-slate-400 px-3 pt-5 pb-2 uppercase tracking-wider">Cá nhân hóa</div>
+                <a href="roadmap.html" class="nav-link flex items-center justify-between px-3.5 py-3 rounded-xl bg-blue-600 text-white font-bold shadow-md transition-all">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[20px] text-amber-300">route</span> 
+                        <span class="text-sm">Lộ trình của tôi</span>
+                    </div>
+                    <span id="sidebarRoadmapBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-black uppercase shadow-sm">ELITE</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="p-4 space-y-2 mt-auto">
+            <a href="settings.html" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-blue-50 text-xs font-bold transition-all">
+                <span class="material-symbols-outlined text-[18px]">settings</span>
+                Cài đặt tài khoản
+            </a>
+            <div class="flex items-center justify-between p-3 rounded-2xl bg-blue-50/60 border border-blue-100">
+                <div class="flex items-center gap-3 cursor-pointer group" onclick="editUserName()" title="Bấm để đổi tên">
+                    <div id="userAvatar" class="w-10 h-10 rounded-xl bg-blue-600 text-white font-extrabold flex items-center justify-center text-base shadow-sm shrink-0">H</div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1.5">
+                            <span id="userSidebarName" class="text-sm font-bold text-blue-950 truncate">Nguyễn Anh Hào</span>
+                            <span id="userEliteBadgeSidebar" class="hidden text-amber-500 shrink-0"><span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">stars</span></span>
+                        </div>
+                        <div class="text-xs text-slate-500 font-medium truncate">Học sinh lớp 12</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto h-screen">
+        <header class="h-16 md:h-20 bg-white/80 backdrop-blur-md sticky top-0 z-20 border-b border-blue-100 px-4 md:px-8 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="md:hidden p-2 -ml-2 text-blue-950 hover:bg-blue-50 rounded-xl transition-colors">
+                    <span class="material-symbols-outlined text-[26px]">menu</span>
+                </button>
+                <div>
+                    <span class="text-[10px] md:text-xs font-extrabold text-blue-600 uppercase tracking-widest block">AI ROADMAP ENGINE</span>
+                    <h1 class="text-base md:text-2xl font-black text-blue-950">Lộ Trình Bứt Phá Mục Tiêu <span id="headerTargetScore" class="text-blue-600">27.00</span> Điểm</h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="openModal('addStageModal')" class="px-3.5 py-2 md:px-4 md:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">add</span> <span class="hidden sm:inline">Thêm mục tiêu chặng</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="p-4 md:p-8 space-y-6 md:space-y-8 max-w-7xl w-full mx-auto">
+            <!-- Banner Mục tiêu -->
+            <div class="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 p-6 md:p-8 rounded-3xl text-white gold-box-shadow flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="space-y-3 w-full md:w-auto">
+                    <div class="flex items-center gap-2 text-xs font-black text-amber-300 uppercase">
+                        <span class="material-symbols-outlined text-[18px]">psychology</span>
+                        Kế hoạch cá nhân hóa theo mục tiêu
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-black">
+                        Khoảng cách mục tiêu: <span id="scoreGapText" class="text-amber-300 gold-glow">Chưa đánh giá</span>
+                    </h2>
+                    <p class="text-xs text-blue-100 max-w-xl">
+                        Tổ hợp: <b id="comboDisplay" class="text-amber-300">Chưa chọn</b> | Điểm test thực tế: <b id="currentScoreDisplay">0.00</b> điểm | Mục tiêu: <b id="targetScoreDisplay">27.00</b> điểm.
+                    </p>
+                    <div class="flex flex-wrap gap-3 pt-1">
+                        <button onclick="openModal('diagnosticModal')" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-blue-950 text-xs font-black transition shadow-md">
+                            <span class="material-symbols-outlined text-[18px]">timer</span>
+                            Thi Test Năng Lực Đầu Vào
+                        </button>
+                        <button onclick="openModal('editTargetModal')" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-blue-100 transition shadow-sm">
+                            <span class="material-symbols-outlined text-[16px]">edit</span>
+                            Đặt lại điểm mục tiêu
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white/10 p-5 rounded-2xl border border-white/20 text-center shrink-0 w-full md:w-auto min-w-[160px]">
+                    <div class="text-xs text-blue-200 uppercase font-bold">Tiến độ lộ trình</div>
+                    <div id="progressPercentDisplay" class="text-4xl font-black text-amber-300 my-1">0%</div>
+                    <div class="text-[11px] text-white/80">Hoàn thành mục tiêu</div>
+                </div>
+            </div>
+
+            <!-- Danh sách chặng lộ trình -->
+            <div class="space-y-4 md:space-y-6">
+                <h3 class="text-lg md:text-xl font-extrabold text-blue-950">Các Chặng Mục Tiêu Học Tập</h3>
+                <div id="roadmapStagesContainer" class="space-y-4"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- POPUP TEST ĐÁNH GIÁ NĂNG LỰC -->
+    <div id="diagnosticModal" onclick="closeModalOnBackdrop(event, 'diagnosticModal')" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm popup-backdrop">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 text-center shadow-2xl border border-blue-100 relative popup-box max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('diagnosticModal')" class="absolute top-5 right-5 text-slate-400 hover:text-blue-900"><span class="material-symbols-outlined">close</span></button>
+            
+            <!-- BƯỚC 1: CHỌN TỔ HỢP MÔN -->
+            <div id="testStep1" class="space-y-6 text-left">
+                <div class="text-center">
+                    <h3 class="text-xl font-black text-blue-950 mb-1">Thi Đánh Giá Năng Lực Đầu Vào</h3>
+                    <p class="text-xs text-slate-500">Chọn tổ hợp môn thi THPTQG của bạn để bắt đầu bài test chuẩn hóa.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="selectCombo('A00', ['Toán', 'Vật Lý', 'Hóa Học'])" class="p-4 border-2 border-slate-100 hover:border-blue-600 rounded-2xl text-left hover:bg-blue-50/50 transition group">
+                        <div class="font-black text-blue-950 text-base group-hover:text-blue-600">Khối A00</div>
+                        <div class="text-xs text-slate-500 font-semibold mt-1">Toán · Vật Lý · Hóa Học</div>
+                    </button>
+                    <button onclick="selectCombo('B00', ['Toán', 'Hóa Học', 'Sinh Học'])" class="p-4 border-2 border-slate-100 hover:border-blue-600 rounded-2xl text-left hover:bg-blue-50/50 transition group">
+                        <div class="font-black text-blue-950 text-base group-hover:text-blue-600">Khối B00</div>
+                        <div class="text-xs text-slate-500 font-semibold mt-1">Toán · Hóa Học · Sinh Học</div>
+                    </button>
+                    <button onclick="selectCombo('A01', ['Toán', 'Vật Lý', 'Tiếng Anh'])" class="p-4 border-2 border-slate-100 hover:border-blue-600 rounded-2xl text-left hover:bg-blue-50/50 transition group">
+                        <div class="font-black text-blue-950 text-base group-hover:text-blue-600">Khối A01</div>
+                        <div class="text-xs text-slate-500 font-semibold mt-1">Toán · Vật Lý · Tiếng Anh</div>
+                    </button>
+                    <button onclick="selectCombo('D07', ['Toán', 'Hóa Học', 'Tiếng Anh'])" class="p-4 border-2 border-slate-100 hover:border-blue-600 rounded-2xl text-left hover:bg-blue-50/50 transition group">
+                        <div class="font-black text-blue-950 text-base group-hover:text-blue-600">Khối D07</div>
+                        <div class="text-xs text-slate-500 font-semibold mt-1">Toán · Hóa Học · Tiếng Anh</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- BƯỚC 2: MÀN HÌNH BÀI TEST -->
+            <div id="testStep2" class="hidden space-y-6 text-left">
+                <div class="flex items-center justify-between border-b pb-4">
+                    <div>
+                        <span id="activeComboBadge" class="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-black">Khối A00</span>
+                        <h4 class="text-lg font-black text-blue-950 mt-1">Bài Thi Đánh Giá Tốc Độ & Năng Lực</h4>
+                    </div>
+                    <div class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl flex items-center gap-2 font-black text-base">
+                        <span class="material-symbols-outlined animate-pulse">timer</span>
+                        <span id="testTimer">05:00</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4 text-xs">
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                        <p class="font-extrabold text-blue-950 text-sm mb-2">Câu 1 (Môn Toán): Cho hàm số y = f(x). Tìm số điểm cực trị của hàm số g(x) = f(|x<sup>2</sup> - 2x|)?</p>
+                        <div class="space-y-2 mt-3">
+                            <label class="flex items-center gap-2 p-2.5 bg-white rounded-xl border border-slate-200 cursor-pointer hover:bg-blue-50"><input type="radio" name="q1" value="A"/> A. 3 điểm cực trị</label>
+                            <label class="flex items-center gap-2 p-2.5 bg-white rounded-xl border border-slate-200 cursor-pointer hover:bg-blue-50"><input type="radio" name="q1" value="B"/> B. 5 điểm cực trị</label>
+                            <label class="flex items-center gap-2 p-2.5 bg-white rounded-xl border border-slate-200 cursor-pointer hover:bg-blue-50"><input type="radio" name="q1" value="C"/> C. 7 điểm cực trị</label>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                        <p class="font-extrabold text-blue-950 text-sm mb-2">Câu 2 (Chuyên đề tổng hợp): Cho phản ứng nhiệt nhôm hoàn toàn hỗn hợp X gồm Al và Fe<sub>2</sub>O<sub>3</sub>. Giá trị m cực đại thu được là bao nhiêu?</p>
+                        <div class="space-y-2 mt-3">
+                            <label class="flex items-center gap-2 p-2.5 bg-white rounded-xl border border-slate-200 cursor-pointer hover:bg-blue-50"><input type="radio" name="q2" value="A"/> A. 14.2g</label>
+                            <label class="flex items-center gap-2 p-2.5 bg-white rounded-xl border border-slate-200 cursor-pointer hover:bg-blue-50"><input type="radio" name="q2" value="B"/> B. 21.6g</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="submitDiagnosticTest()" class="w-full py-3.5 rounded-xl font-black text-sm text-white bg-blue-600 hover:bg-blue-700 transition shadow-md">Nộp bài thi & Phân tích điểm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP THAY ĐỔI ĐIỂM SỐ MỤC TIÊU -->
+    <div id="editTargetModal" onclick="closeModalOnBackdrop(event, 'editTargetModal')" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm popup-backdrop">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 md:p-8 text-center shadow-2xl border border-blue-100 relative popup-box">
+            <button onclick="closeModal('editTargetModal')" class="absolute top-5 right-5 text-slate-400 hover:text-blue-900"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-xl font-black text-blue-950 mb-1">Đặt Điểm Mục Tiêu</h3>
+            <p class="text-xs text-slate-500 mb-6">Mục tiêu kỳ thi THPT Quốc Gia của bạn (Tối đa 30.00 điểm).</p>
+
+            <form id="targetScoreForm" class="space-y-4 text-left text-xs">
+                <div>
+                    <label class="block font-bold text-blue-900 mb-1">Điểm mục tiêu mong muốn (Tổng 3 môn)</label>
+                    <input id="inputTargetScore" type="number" min="0" max="30" step="0.05" class="w-full p-3 rounded-xl border border-slate-200 font-bold text-amber-600 focus:ring-2 focus:ring-blue-600 focus:outline-none" required/>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl font-black text-sm text-white bg-blue-600 hover:bg-blue-700 transition">Cập nhật mục tiêu</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- POPUP THÊM CHẶNG MỤC TIÊU HỌC TẬP MỚI -->
+    <div id="addStageModal" onclick="closeModalOnBackdrop(event, 'addStageModal')" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm popup-backdrop">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 md:p-8 text-center shadow-2xl border border-blue-100 relative popup-box">
+            <button onclick="closeModal('addStageModal')" class="absolute top-5 right-5 text-slate-400 hover:text-blue-900"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-xl font-black text-blue-950 mb-1">Thêm Mục Tiêu Chặng Học</h3>
+            <p class="text-xs text-slate-500 mb-6">Tạo thêm mốc bứt phá mới cho hành trình ôn tập.</p>
+
+            <form id="addStageForm" class="space-y-3 text-left text-xs">
+                <div><label class="block font-bold text-blue-900 mb-1">Số thứ tự chặng</label><input id="stageNum" type="text" placeholder="VD: 03" class="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 focus:outline-none" required/></div>
+                <div><label class="block font-bold text-blue-900 mb-1">Tên mục tiêu / Chặng</label><input id="stageName" type="text" placeholder="VD: Chinh Phục Điểm 10 Toán" class="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 focus:outline-none" required/></div>
+                <div><label class="block font-bold text-blue-900 mb-1">Khoảng điểm bứt phá</label><input id="stageRange" type="text" placeholder="VD: 24.50 → 26.50" class="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 focus:outline-none" required/></div>
+                <div><label class="block font-bold text-blue-900 mb-1">Nhiệm vụ trọng tâm</label><input id="stageDesc" type="text" placeholder="Mô tả các dạng bài cần tập trung..." class="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 focus:outline-none" required/></div>
+                <button type="submit" class="w-full py-3.5 rounded-xl font-black text-sm text-white bg-blue-600 hover:bg-blue-700 transition mt-2">Thêm chặng mới</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- POPUP YÊU CẦU VIP -->
+    <div id="vipRequiredModal" onclick="closeModalOnBackdrop(event, 'vipRequiredModal')" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm popup-backdrop">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 md:p-8 text-center shadow-2xl border border-blue-100 relative popup-box">
+            <button onclick="closeModal('vipRequiredModal')" class="absolute top-5 right-5 text-slate-400 hover:text-blue-900"><span class="material-symbols-outlined">close</span></button>
+            <div class="w-16 h-16 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-4"><span class="material-symbols-outlined text-4xl">stars</span></div>
+            <h3 class="text-2xl font-black text-blue-950 mb-2">Đặc Quyền Lộ Trình VIP</h3>
+            <p class="text-sm text-slate-600 mb-6 font-medium">Bạn cần kích hoạt gói <b>Primux Elite</b> để mở khóa Lộ trình cá nhân hóa.</p>
+            <a href="elite.html" class="block w-full py-3.5 rounded-xl font-black text-sm text-blue-950 bg-amber-400 hover:bg-amber-500 transition shadow-lg">Nâng cấp Elite ngay</a>
+        </div>
+    </div>
+
+    <script>
+        let timerInterval;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('pageOverlay')?.classList.add('hidden-overlay');
+            if (!isEliteUser()) openModal('vipRequiredModal');
+            loadScoreTarget();
+            renderUserStages();
+            renderUserInterface();
+        });
+
+        function isEliteUser() { return !!localStorage.getItem('primux_elite_plan'); }
+        function openModal(id) { document.getElementById(id)?.classList.add('active'); }
+        function closeModal(id) { 
+            document.getElementById(id)?.classList.remove('active'); 
+            clearInterval(timerInterval);
+        }
+        function closeModalOnBackdrop(e, id) { if (e.target.id === id) closeModal(id); }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mainSidebar');
+            const overlay = document.getElementById('mobileSidebarOverlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        function selectCombo(comboName, subjects) {
+            localStorage.setItem('primux_selected_combo', comboName);
+            document.getElementById('activeComboBadge').innerText = `Khối ${comboName}: ${subjects.join(' - ')}`;
+            document.getElementById('testStep1').classList.add('hidden');
+            document.getElementById('testStep2').classList.remove('hidden');
+            startTestTimer(300);
+        }
+
+        function startTestTimer(seconds) {
+            let timeLeft = seconds;
+            const timerEl = document.getElementById('testTimer');
+            clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                const s = (timeLeft % 60).toString().padStart(2, '0');
+                timerEl.innerText = `${m}:${s}`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Đã hết thời gian làm bài test áp lực! Hệ thống tự động thu bài.");
+                    submitDiagnosticTest();
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function submitDiagnosticTest() {
+            clearInterval(timerInterval);
+            const calculatedScore = (Math.random() * (24.5 - 19.5) + 19.5).toFixed(2);
+    
+            localStorage.setItem('primux_score_current', calculatedScore);
+            localStorage.setItem('primux_user_roadmap_score', calculatedScore);
+    
+            closeModal('diagnosticModal');
+            document.getElementById('testStep1').classList.remove('hidden');
+            document.getElementById('testStep2').classList.add('hidden');
+    
+            autoGenerateRoadmapStages(parseFloat(calculatedScore));
+            loadScoreTarget();
+            renderUserStages();
+            window.dispatchEvent(new Event('storage'));
+            alert(`Hoàn thành bài Test! Điểm năng lực thực tế của bạn là: ${calculatedScore} điểm.`);
+        }
+
+        function autoGenerateRoadmapStages(startScore) {
+            const targetScore = parseFloat(localStorage.getItem('primux_score_target') || '27.00');
+            const combo = localStorage.getItem('primux_selected_combo') || 'THPTQG';
+            
+            const gap = targetScore - startScore;
+            const step = gap / 3;
+
+            const stages = [
+                { 
+                    num: '01', 
+                    name: `Phục Hồi Lỗ Hổng Kiến Thức (${combo})`, 
+                    range: `${startScore.toFixed(2)} → ${(startScore + step).toFixed(2)} Điểm`, 
+                    desc: 'Khắc phục các dạng bài hay làm sai dưới áp lực thời gian.' 
+                },
+                { 
+                    num: '02', 
+                    name: 'Tối Ưu Tốc Độ Giải Vận Dụng', 
+                    range: `${(startScore + step).toFixed(2)} → ${(startScore + step * 2).toFixed(2)} Điểm`, 
+                    desc: 'Rèn luyện phản xạ cho các câu hỏi phân hóa từ 8.0 trở lên.' 
+                },
+                { 
+                    num: '03', 
+                    name: 'Chinh Phục Điểm Mục Tiêu Nâng Cao', 
+                    range: `${(startScore + step * 2).toFixed(2)} → ${targetScore.toFixed(2)} Điểm`, 
+                    desc: 'Luyện đề thực chiến dưới áp lực phòng thi thật.' 
+                }
+            ];
+            localStorage.setItem('primux_roadmap_stages', JSON.stringify(stages));
+        }
+
+        function loadScoreTarget() {
+            const currentScore = parseFloat(localStorage.getItem('primux_score_current') || '0.00');
+            const targetScore = parseFloat(localStorage.getItem('primux_score_target') || '27.00');
+            const combo = localStorage.getItem('primux_selected_combo') || 'Chưa chọn';
+
+            document.getElementById('inputTargetScore').value = targetScore.toFixed(2);
+            document.getElementById('currentScoreDisplay').innerText = currentScore.toFixed(2);
+            document.getElementById('targetScoreDisplay').innerText = targetScore.toFixed(2);
+            document.getElementById('headerTargetScore').innerText = targetScore.toFixed(2);
+            document.getElementById('comboDisplay').innerText = combo;
+
+            if (currentScore === 0) {
+                document.getElementById('scoreGapText').innerText = "Cần làm Test đầu vào";
+                document.getElementById('progressPercentDisplay').innerText = "0%";
+            } else {
+                const gap = targetScore - currentScore;
+                document.getElementById('scoreGapText').innerText = gap > 0 ? `+${gap.toFixed(2)} điểm` : `Đạt chỉ tiêu!`;
+                let percent = Math.round((currentScore / targetScore) * 100);
+                document.getElementById('progressPercentDisplay').innerText = `${Math.min(100, Math.max(0, percent))}%`;
+            }
+        }
+
+        document.getElementById('targetScoreForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let inputVal = parseFloat(document.getElementById('inputTargetScore').value);
+            
+            if (isNaN(inputVal) || inputVal < 0) {
+                inputVal = 0;
+            } else if (inputVal > 30) {
+                alert("Điểm mục tiêu tối đa của tổ hợp 3 môn là 30.00 điểm!");
+                inputVal = 30;
+            }
+
+            const targFormatted = inputVal.toFixed(2);
+            localStorage.setItem('primux_score_target', targFormatted);
+            
+            closeModal('editTargetModal');
+            loadScoreTarget();
+
+            const currentScore = parseFloat(localStorage.getItem('primux_score_current') || '0');
+            if (currentScore > 0) {
+                autoGenerateRoadmapStages(currentScore);
+                renderUserStages();
+            }
+
+            window.dispatchEvent(new Event('storage'));
+        });
+
+        document.getElementById('addStageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const num = document.getElementById('stageNum').value.trim();
+            const name = document.getElementById('stageName').value.trim();
+            const range = document.getElementById('stageRange').value.trim();
+            const desc = document.getElementById('stageDesc').value.trim();
+
+            let stages = JSON.parse(localStorage.getItem('primux_roadmap_stages') || '[]');
+            stages.push({ num, name, range, desc });
+            localStorage.setItem('primux_roadmap_stages', JSON.stringify(stages));
+
+            this.reset();
+            closeModal('addStageModal');
+            renderUserStages();
+        });
+
+        function renderUserStages() {
+            const stages = JSON.parse(localStorage.getItem('primux_roadmap_stages') || '[]');
+            const container = document.getElementById('roadmapStagesContainer');
+            container.innerHTML = '';
+
+            if (stages.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-8 rounded-3xl border border-dashed border-blue-200 text-center text-slate-400">
+                        <span class="material-symbols-outlined text-4xl mb-2">assignment_late</span>
+                        <p class="text-sm font-medium">Chưa có dữ liệu bài test. Nhấn "Thi Test Năng Lực Đầu Vào" để tạo lộ trình chuẩn nhất!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            stages.forEach((st, idx) => {
+                const el = document.createElement('div');
+                const isFirst = idx === 0;
+
+                el.className = isFirst
+                    ? "bg-white p-5 md:p-6 rounded-3xl border-2 border-blue-600 card-shadow flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative"
+                    : "bg-white p-5 md:p-6 rounded-3xl border border-blue-100 card-shadow flex flex-col md:flex-row items-start md:items-center justify-between gap-4";
+
+                el.innerHTML = `
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-2xl ${isFirst ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-600 border border-blue-200'} flex items-center justify-center font-black text-lg shrink-0">
+                            ${st.num}
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                <span class="px-2.5 py-0.5 rounded-full ${isFirst ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-700'} text-[10px] font-black uppercase">CHẶNG ${st.num}</span>
+                                <span class="text-xs font-bold text-slate-500">${st.range}</span>
+                            </div>
+                            <h4 class="text-base font-extrabold text-blue-950">${st.name}</h4>
+                            <p class="text-xs text-slate-500 mt-1">${st.desc}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0 self-end md:self-center">
+                        <button onclick="deleteStage(${idx})" class="p-2 px-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 text-xs font-bold transition flex items-center gap-1" title="Xóa mục tiêu">
+                            <span class="material-symbols-outlined text-[16px]">delete</span> Xóa
+                        </button>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function deleteStage(index) {
+            let stages = JSON.parse(localStorage.getItem('primux_roadmap_stages') || '[]');
+            stages.splice(index, 1);
+            localStorage.setItem('primux_roadmap_stages', JSON.stringify(stages));
+            renderUserStages();
+        }
+
+        function renderUserInterface() {
+            const savedName = localStorage.getItem('primux_user_name') || 'Nguyễn Anh Hào';
+            document.getElementById('userSidebarName').innerText = savedName;
+            document.getElementById('userAvatar').innerText = savedName.trim().charAt(0).toUpperCase();
+
+            const kbBadge = document.getElementById('sidebarKnowledgeBadge');
+            const rbBadge = document.getElementById('sidebarRoadmapBadge');
+            if (isEliteUser()) {
+                document.getElementById('userEliteBadgeSidebar')?.classList.remove('hidden');
+                const badgeStyle = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-400 text-blue-950 text-[10px] font-black uppercase shadow-sm";
+                if (kbBadge) { kbBadge.innerText = "VIP"; kbBadge.className = badgeStyle; }
+                if (rbBadge) { rbBadge.innerText = "VIP"; rbBadge.className = badgeStyle; }
+            }
+        }
+
+        function editUserName() {
+            const currentName = localStorage.getItem('primux_user_name') || 'Nguyễn Anh Hào';
+            const newName = prompt('Nhập tên hiển thị của bạn:', currentName);
+            if (newName && newName.trim() !== '') {
+                localStorage.setItem('primux_user_name', newName.trim());
+                renderUserInterface();
+            }
+        }
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href && href !== '#' && !href.startsWith('javascript')) {
+                    e.preventDefault();
+                    document.getElementById('pageOverlay')?.classList.remove('hidden-overlay');
+                    setTimeout(() => window.location.href = href, 300);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

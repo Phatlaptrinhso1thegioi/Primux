@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phòng Thi Online - Form Chuẩn BGD 2027</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { "primary-deep": "#1e3a8a", "primary-main": "#2563eb", "primary-light": "#60a5fa" },
+                    fontFamily: { sans: ["Be Vietnam Pro", "sans-serif"] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #f8fbff; }
+        .card-shadow { box-shadow: 0 10px 30px -5px rgba(30, 64, 175, 0.06); }
+        .popup-backdrop { opacity: 0; pointer-events: none; transition: opacity 0.35s ease; }
+        .popup-backdrop.active { opacity: 1; pointer-events: auto; }
+        .popup-box { transform: scale(0.9) translateY(10px); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .popup-backdrop.active .popup-box { transform: scale(1) translateY(0); }
+        .page-transition-overlay { position: fixed; inset: 0; background-color: #1e3a8a; z-index: 9999; pointer-events: none; opacity: 1; transition: opacity 0.35s ease; }
+        .page-transition-overlay.hidden-overlay { opacity: 0; }
+        
+        .q-palette-btn { transition: all 0.2s ease; }
+        .q-palette-btn.active { ring: 2px; ring-color: #2563eb; font-weight: 900; transform: scale(1.05); }
+        .q-palette-btn.answered { background-color: #2563eb !important; color: white !important; border-color: #1d4ed8 !important; }
+        .q-palette-btn.partially-answered { background-color: #dbeafe !important; color: #1e40af !important; border-color: #93c5fd !important; }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        
+        .vip-gradient-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+            border: 1.5px solid #fde68a;
+        }
+    </style>
+</head>
+<body class="bg-[#f4f8ff] text-slate-900 min-h-screen flex flex-col md:flex-row antialiased selection:bg-blue-600 selection:text-white">
+    <div id="pageOverlay" class="page-transition-overlay"></div>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="w-full md:w-72 bg-white border-r border-blue-100 flex flex-col justify-between shrink-0 card-shadow z-20 h-auto md:h-screen sticky top-0">
+        <div>
+            <div class="p-6 border-b border-blue-50 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-lg shadow-md">P</div>
+                <div>
+                    <span class="text-xl font-black text-blue-950 block">PRIMUX</span>
+                    <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest block">THPT Quốc Gia · 2027</span>
+                </div>
+            </div>
+            <nav class="p-4 space-y-1.5">
+                <a href="index.html" class="nav-link flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-blue-50 font-semibold transition-all">
+                    <span class="material-symbols-outlined text-[20px]">grid_view</span> <span class="text-sm">Tổng quan</span>
+                </a>
+                <a href="exam.html" class="nav-link flex items-center gap-3 px-3.5 py-3 rounded-xl bg-blue-600 text-white font-bold shadow-md transition-all">
+                    <span class="material-symbols-outlined text-[20px] text-amber-300">menu_book</span> <span class="text-sm">Luyện đề</span>
+                </a>
+                <a href="knowledge.html" class="nav-link flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-blue-50 font-semibold transition-all">
+                    <span class="material-symbols-outlined text-[20px]">auto_stories</span> <span class="text-sm">Kho kiến thức</span>
+                </a>
+                <a href="roadmap.html" class="nav-link flex items-center gap-3 px-3.5 py-3 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-blue-50 font-semibold transition-all">
+                    <span class="material-symbols-outlined text-[20px]">route</span> <span class="text-sm">Lộ trình của tôi</span>
+                </a>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-slate-100">
+            <div class="flex items-center justify-between p-2">
+                <div class="flex items-center gap-3">
+                    <div id="userAvatar" class="w-9 h-9 rounded-xl bg-blue-600 text-white font-black flex items-center justify-center text-sm">H</div>
+                    <div class="min-w-0">
+                        <div id="userNameSidebar" class="text-xs font-bold text-blue-950 truncate">Nguyễn Anh Hào</div>
+                        <div class="flex items-center gap-1">
+                            <span id="userXpSidebar" class="text-[10px] text-blue-600 font-extrabold">0 XP</span>
+                            <span id="userRoleBadge" class="text-[9px] font-black px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 uppercase">Free</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto min-h-screen">
+        <header class="h-20 bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b border-blue-100 px-6 md:px-8 flex items-center justify-between">
+            <div>
+                <span class="text-[10px] md:text-xs font-extrabold text-blue-600 uppercase tracking-widest">CẤU TRÚC MỚI BỘ GD&ĐT 2027</span>
+                <h1 class="text-lg md:text-2xl font-black text-blue-950">Kho Đề Thi Chuẩn Hóa</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <!-- Toggle Test Tài Khoản Elite -->
+                <button onclick="toggleEliteStatus()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-bold transition flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px] text-amber-500">published_with_changes</span> 
+                    <span id="toggleEliteBtnText">Thử làm Elite</span>
+                </button>
+                <span class="hidden sm:flex px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px] text-amber-500" style="font-variation-settings: 'FILL' 1;">verified</span> 
+                    Form Thi Máy Tính 2027
+                </span>
+            </div>
+        </header>
+
+        <div class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+            <!-- BANNER THÔNG BÁO FORM MỚI -->
+            <div class="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 p-6 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <span class="px-2.5 py-0.5 rounded-full bg-amber-400 text-blue-950 text-[10px] font-black uppercase">Định dạng thi 2027</span>
+                    <h2 class="text-xl font-black">Thi Trắc Nghiệm 3 Phần Trên Máy Tính</h2>
+                    <p class="text-xs text-blue-100">Gồm: Phần I (4 Lựa chọn) · Phần II (Đúng/Sai) · Phần III (Trả lời ngắn). Tự động chấm theo thang điểm thi chính thức.</p>
+                </div>
+            </div>
+
+            <!-- BỘ LỌC ĐỀ THI -->
+            <div class="flex items-center gap-2 border-b border-slate-200 pb-3 overflow-x-auto custom-scrollbar">
+                <button onclick="filterExams('all')" id="filter_all" class="px-4 py-2 rounded-xl text-xs font-extrabold transition bg-blue-600 text-white shadow-sm">Tất cả đề thi</button>
+                <button onclick="filterExams('free')" id="filter_free" class="px-4 py-2 rounded-xl text-xs font-extrabold transition bg-slate-100 text-slate-600 hover:bg-slate-200">Đề Free Miễn Phí</button>
+                <button onclick="filterExams('vip')" id="filter_vip" class="px-4 py-2 rounded-xl text-xs font-extrabold transition bg-slate-100 text-amber-700 hover:bg-amber-100 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span> Đề VIP Elite
+                </button>
+            </div>
+
+            <!-- DANH SÁCH ĐỀ THI -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="examsGridContainer"></div>
+        </div>
+    </main>
+
+    <!-- POPUP THÔNG BÁO NÂNG CẤP ELITE (DÀNH CHO ĐỀ VIP) -->
+    <div id="eliteUpgradeModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm popup-backdrop">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl relative popup-box border border-amber-200 overflow-hidden">
+            <div class="w-16 h-16 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-4 border border-amber-200">
+                <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-[10px] font-black uppercase tracking-wider">Đặc quyền VIP Elite</span>
+            <h3 class="text-xl font-black text-blue-950 mt-2 mb-2">Yêu Cầu Tài Khoản Elite</h3>
+            <p class="text-xs text-slate-600 leading-relaxed mb-6">
+                Đề thi này chứa bộ câu hỏi phân hóa nâng cao và đáp án giải chi tiết 100%. Vui lòng nâng cấp tài khoản **Primux Elite** để mở khóa tất cả đề thi VIP.
+            </p>
+
+            <div class="space-y-2">
+                <button onclick="simulateUpgradeToElite()" class="w-full py-3 rounded-xl font-extrabold text-xs text-blue-950 bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 hover:brightness-105 shadow-md flex items-center justify-center gap-1.5">
+                    <span class="material-symbols-outlined text-[18px]">bolt</span> Nâng Cấp Elite Ngay (Miễn Phí Demo)
+                </button>
+                <button onclick="closeModal('eliteUpgradeModal')" class="w-full py-2.5 rounded-xl font-bold text-xs text-slate-500 hover:bg-slate-100">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP GIAO DIỆN PHÒNG THI CHUẨN FORM BỘ 2027 -->
+    <div id="liveExamModal" class="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-4 bg-slate-950/80 backdrop-blur-md popup-backdrop">
+        <div class="bg-white rounded-3xl w-full max-w-6xl h-[95vh] flex flex-col shadow-2xl border border-blue-100 relative popup-box overflow-hidden">
+            
+            <!-- TOPBAR PHÒNG THI -->
+            <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-900 text-white shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-black flex items-center justify-center text-sm">2027</div>
+                    <div>
+                        <h3 id="examLiveTitle" class="text-sm md:text-base font-black truncate max-w-md">Đề Thi Chuẩn Định Dạng THPTQG</h3>
+                        <div class="text-[11px] text-slate-400 font-medium" id="examLiveSubtitle">Môn: Toán Học · Thang điểm: 10.0</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="text-right">
+                        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">THỜI GIAN CÒN LẠI</div>
+                        <div class="text-xl md:text-2xl font-black text-amber-400 font-mono leading-none" id="examTimer">90:00</div>
+                    </div>
+                    <button onclick="confirmSubmitEarly()" class="px-4 py-2 rounded-xl font-extrabold text-xs text-white bg-emerald-600 hover:bg-emerald-500 shadow-md transition">
+                        Nộp Bài Thi
+                    </button>
+                </div>
+            </div>
+
+            <!-- MAIN WORKSPACE: SIDEBAR PALETTE & CONTENT -->
+            <div class="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
+                
+                <!-- BẢNG ĐIỀU HƯỚNG CÂU HỎI (QUESTION PALETTE) -->
+                <div class="w-full md:w-80 bg-slate-50 border-r border-slate-200 p-4 flex flex-col justify-between shrink-0 overflow-y-auto custom-scrollbar">
+                    <div class="space-y-4">
+                        <div class="text-xs font-black text-slate-700 uppercase tracking-wider border-b pb-2 flex justify-between items-center">
+                            <span>Danh sách câu hỏi</span>
+                            <span id="answeredCounter" class="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full font-extrabold">0/0 đã làm</span>
+                        </div>
+                        
+                        <!-- PART 1 PALETTE -->
+                        <div id="paletteSection1" class="space-y-2">
+                            <div class="text-[11px] font-extrabold text-blue-900">Phần I: Trắc nghiệm (4 lựa chọn)</div>
+                            <div class="grid grid-cols-5 gap-1.5" id="paletteGridPart1"></div>
+                        </div>
+
+                        <!-- PART 2 PALETTE -->
+                        <div id="paletteSection2" class="space-y-2 pt-2 border-t border-slate-200">
+                            <div class="text-[11px] font-extrabold text-blue-900">Phần II: Trắc nghiệm (Đúng/Sai)</div>
+                            <div class="grid grid-cols-5 gap-1.5" id="paletteGridPart2"></div>
+                        </div>
+
+                        <!-- PART 3 PALETTE -->
+                        <div id="paletteSection3" class="space-y-2 pt-2 border-t border-slate-200">
+                            <div class="text-[11px] font-extrabold text-blue-900">Phần III: Trả lời ngắn</div>
+                            <div class="grid grid-cols-5 gap-1.5" id="paletteGridPart3"></div>
+                        </div>
+                    </div>
+
+                    <!-- chú thích trạng thái -->
+                    <div class="pt-4 border-t border-slate-200 text-[10px] space-y-1 text-slate-500 font-medium">
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-white border border-slate-300"></span> Chưa làm</div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-blue-600"></span> Đã hoàn thành</div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-blue-100 border border-blue-300"></span> Đang làm dở (Phần II)</div>
+                    </div>
+                </div>
+
+                <!-- DISPLAY VÙNG CÂU HỎI HIỆN TẠI -->
+                <div class="flex-1 bg-white p-6 md:p-8 overflow-y-auto flex flex-col justify-between custom-scrollbar" id="questionDisplayContainer">
+                    <div id="singleQuestionContentArea" class="space-y-6">
+                        <!-- Content rendered by JS -->
+                    </div>
+
+                    <!-- FOOTER NÚT ĐIỀU HƯỚNG -->
+                    <div class="pt-6 mt-8 border-t border-slate-100 flex justify-between items-center">
+                        <button onclick="navigateQuestion(-1)" id="btnPrevQ" class="px-5 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 font-bold text-xs text-slate-700 transition flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[18px]">arrow_back</span> Câu trước
+                        </button>
+                        <span id="currentQNumberIndicator" class="text-xs font-extrabold text-slate-400">Câu 1 / 22</span>
+                        <button onclick="navigateQuestion(1)" id="btnNextQ" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 font-bold text-xs text-white transition flex items-center gap-1.5 shadow-md">
+                            Câu tiếp theo <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP KẾT QUẢ VÀ BẢNG ĐIỂM CHUẨN BGD 2027 -->
+    <div id="resultModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm popup-backdrop">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 md:p-8 text-center shadow-2xl relative popup-box overflow-hidden border border-blue-100">
+            <div class="w-16 h-16 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center mx-auto mb-3 border border-amber-100">
+                <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+            </div>
+            <h3 class="text-xl md:text-2xl font-black text-blue-950">Kết Quả Bài Thi THPTQG 2027</h3>
+            <p class="text-xs text-slate-500 font-medium mb-4">Đã được chấm theo thang điểm quy chuẩn chính thức của Bộ GD&ĐT</p>
+            
+            <div class="bg-blue-50/70 p-4 rounded-2xl border border-blue-100 mb-6">
+                <div class="text-[10px] font-black text-blue-600 uppercase tracking-widest">ĐIỂM SỐ QUY ĐỔI</div>
+                <div class="text-5xl font-black text-blue-950 my-1" id="resultScore">0.00</div>
+                <div class="text-xs font-bold text-emerald-600" id="resultXpReward">+50 XP Tích Lũy</div>
+            </div>
+
+            <!-- CHI TIẾT ĐIỂM THEO PHẦN -->
+            <div class="grid grid-cols-3 gap-2 text-left mb-6">
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-center">
+                    <div class="text-[9px] font-bold text-slate-400 uppercase">PHẦN I</div>
+                    <div id="scorePart1" class="text-sm font-black text-blue-900">0/12</div>
+                    <div class="text-[9px] text-slate-500">4 Lựa chọn</div>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-center">
+                    <div class="text-[9px] font-bold text-slate-400 uppercase">PHẦN II</div>
+                    <div id="scorePart2" class="text-sm font-black text-blue-900">0/4</div>
+                    <div class="text-[9px] text-slate-500">Đúng / Sai</div>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-center">
+                    <div class="text-[9px] font-bold text-slate-400 uppercase">PHẦN III</div>
+                    <div id="scorePart3" class="text-sm font-black text-blue-900">0/6</div>
+                    <div class="text-[9px] text-slate-500">Trả lời ngắn</div>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <button onclick="reviewExplanations()" class="w-full py-3 rounded-xl font-extrabold text-xs text-white bg-blue-600 hover:bg-blue-700 shadow-md">Xem Lời Giải Chi Tiết</button>
+                <button onclick="closeModal('resultModal'); closeModal('liveExamModal');" class="w-full py-2.5 rounded-xl font-bold text-xs text-slate-600 hover:bg-slate-100">Thoát Phòng Thi</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DỮ LIỆU ĐỀ THI VỚI PHÂN LOẠI FREE & VIP (ELITE)
+        const REAL_EXAM_DATA = [
+            {
+                id: 'toan_2027_01',
+                isVip: false, // ĐỀ FREE
+                title: 'Đề Thi Thử Minh Họa THPT Quốc Gia 2027 - Môn Toán (Đề Chuẩn Free)',
+                subject: 'Toán Học',
+                time: 90,
+                qCount: '22 câu (3 Phần)',
+                part1: [
+                    {
+                        id: 'p1_1',
+                        number: 1,
+                        content: 'Cho hàm số $y = f(x)$ có bảng biến thiên trên đoạn $[-2; 3]$. Giá trị lớn nhất của hàm số trên đoạn $[-2; 3]$ bằng bao nhiêu?',
+                        options: [
+                            { key: 'A', text: '5' },
+                            { key: 'B', text: '-1' },
+                            { key: 'C', text: '3' },
+                            { key: 'D', text: '0' }
+                        ],
+                        answer: 'A',
+                        explanation: 'Dựa vào bảng biến thiên trên $[-2; 3]$, điểm cao nhất của đồ thị đạt tại $y = 5$.'
+                    },
+                    {
+                        id: 'p1_2',
+                        number: 2,
+                        content: 'Trong không gian $Oxyz$, cho mặt cầu $(S): (x-1)^2 + (y+2)^2 + (z-3)^2 = 16$. Tọa độ tâm $I$ và bán kính $R$ của mặt cầu là:',
+                        options: [
+                            { key: 'A', text: '$I(-1; 2; -3), R = 16$' },
+                            { key: 'B', text: '$I(1; -2; 3), R = 4$' },
+                            { key: 'C', text: '$I(1; -2; 3), R = 16$' },
+                            { key: 'D', text: '$I(-1; 2; -3), R = 4$' }
+                        ],
+                        answer: 'B',
+                        explanation: 'Phương trình mặt cầu dạng $(x-a)^2 + (y-b)^2 + (z-c)^2 = R^2 \Rightarrow I(1; -2; 3)$ và $R = \sqrt{16} = 4$.'
+                    }
+                ],
+                part2: [
+                    {
+                        id: 'p2_1',
+                        number: 1,
+                        content: 'Cho hàm số $y = f(x) = x^3 - 3x^2 + 2$. Xét tính đúng/sai của các phát biểu sau:',
+                        items: [
+                            { key: 'a', text: 'Hàm số đã cho đồng biến trên khoảng $(2; +\infty)$.' },
+                            { key: 'b', text: 'Điểm cực tiểu của đồ thị hàm số là $x = 0$.' },
+                            { key: 'c', text: 'Giá trị cực đại của hàm số bằng $2$.' },
+                            { key: 'd', text: 'Phương trình $f(x) = 0$ có đúng 3 nghiệm thực phân biệt.' }
+                        ],
+                        answers: { a: true, b: false, c: true, d: true },
+                        explanation: '$f\'(x) = 3x^2 - 6x = 0 \Leftrightarrow x=0$ hoặc $x=2$. Cực đại tại $x=0 \Rightarrow y_{CĐ}=2$. Cực tiểu tại $x=2 \Rightarrow y_{CT}=-2$.'
+                    }
+                ],
+                part3: [
+                    {
+                        id: 'p3_1',
+                        number: 1,
+                        content: 'Cho hàm số $y = f(x)$ có đạo hàm $f\'(x) = (x-1)(x+2)^2(x-3)$. Hàm số có bao nhiêu điểm cực trị?',
+                        answer: '2',
+                        explanation: '$f\'(x) = 0$ đổi dấu qua $x = 1$ và $x = 3$. Nghiệm $x = -2$ là nghiệm bội hai nên có 2 điểm cực trị.'
+                    }
+                ]
+            },
+            {
+                id: 'toan_vip_2027_02',
+                isVip: true, // ĐỀ VIP ELITE
+                title: 'Bộ Đề Phát Triển Đề Minh Họa BGD 2027 - Môn Toán (Vận Dụng Cao)',
+                subject: 'Toán Học',
+                time: 90,
+                qCount: '22 câu (3 Phần)',
+                part1: [
+                    {
+                        id: 'p1_1_vip',
+                        number: 1,
+                        content: 'Cho hàm số $y = f(x)$ liên tục trên $\mathbb{R}$. Biết hàm số $f\'(x)$ có đồ thị như hình vẽ bên. Số điểm cực trị của hàm số $g(x) = f(x^2 - 2x)$ là:',
+                        options: [
+                            { key: 'A', text: '3' },
+                            { key: 'B', text: '5' },
+                            { key: 'C', text: '2' },
+                            { key: 'D', text: '4' }
+                        ],
+                        answer: 'A',
+                        explanation: 'Đạo hàm $g\'(x) = (2x-2)f\'(x^2-2x) = 0$. Giải ra các nghiệm đổi dấu thu được đúng 3 điểm cực trị.'
+                    }
+                ],
+                part2: [
+                    {
+                        id: 'p2_1_vip',
+                        number: 1,
+                        content: 'Trong không gian $Oxyz$, cho mặt cầu $(S)$ và mặt phẳng $(P)$ chứa tham số $m$. Xét tính đúng/sai:',
+                        items: [
+                            { key: 'a', text: 'Khoảng cách từ tâm mặt cầu đến $(P)$ đạt giá trị lớn nhất khi $m = 1$.' },
+                            { key: 'b', text: 'Mặt phẳng $(P)$ luôn cắt $(S)$ theo giao tuyến là đường tròn với mọi $m$.' },
+                            { key: 'c', text: 'Bán kính đường tròn giao tuyến nhỏ nhất bằng $3$.' },
+                            { key: 'd', text: 'Có 2 giá trị của $m$ để $(P)$ tiếp xúc với mặt cầu $(S)$.' }
+                        ],
+                        answers: { a: true, b: false, c: true, d: true },
+                        explanation: 'Phân tích khoảng cách $d(I, (P))$ theo tham số $m$ để tìm min/max.'
+                    }
+                ],
+                part3: [
+                    {
+                        id: 'p3_1_vip',
+                        number: 1,
+                        content: 'Có bao nhiêu giá trị nguyên của tham số $m \in [-10; 10]$ để hàm số $y = |x^3 - 3x + m|$ có đúng 5 điểm cực trị?',
+                        answer: '3',
+                        explanation: 'Điều kiện để hàm $y = |f(x)|$ có 5 cực trị là phương trình $f(x) = 0$ có 3 nghiệm phân biệt. Tìm $m \in (-2; 2) \Rightarrow m \in \{-1, 0, 1\}$.'
+                    }
+                ]
+            },
+            {
+                id: 'ly_2027_01',
+                isVip: false, // ĐỀ FREE
+                title: 'Đề Thi Thử Minh Họa THPT Quốc Gia 2027 - Môn Vật Lý',
+                subject: 'Vật Lý',
+                time: 50,
+                qCount: '18 câu (3 Phần)',
+                part1: [
+                    {
+                        id: 'p1_1',
+                        number: 1,
+                        content: 'Một vật dao động điều hòa theo phương trình $x = 5\cos(10\pi t + \pi/3)\text{ cm}$. Biên độ dao động của vật là:',
+                        options: [
+                            { key: 'A', text: '5 cm' },
+                            { key: 'B', text: '10 cm' },
+                            { key: 'C', text: '10\pi cm' },
+                            { key: 'D', text: '\pi/3 cm' }
+                        ],
+                        answer: 'A',
+                        explanation: 'Biên độ $A = 5\text{ cm}$.'
+                    }
+                ],
+                part2: [
+                    {
+                        id: 'p2_1',
+                        number: 1,
+                        content: 'Xét một chất khí lý tưởng biến đổi trạng thái trong một xilanh kín:',
+                        items: [
+                            { key: 'a', text: 'Khi nhiệt độ không đổi, áp suất tỉ lệ nghịch với thể tích.' },
+                            { key: 'b', text: 'Đồ thị đường đẳng nhiệt trong hệ tọa độ $(p, V)$ là đường thẳng đi qua gốc tọa độ.' },
+                            { key: 'c', text: 'Đơn vị của áp suất có thể là Pascal (Pa) hoặc Atmosphere (atm).' },
+                            { key: 'd', text: 'Quá trình đẳng áp có thể tích tỉ lệ thuận với nhiệt độ tuyệt đối T.' }
+                        ],
+                        answers: { a: true, b: false, c: true, d: true },
+                        explanation: 'Đường đẳng nhiệt trong hệ $(p, V)$ là đường Hyperbol, không phải đường thẳng.'
+                    }
+                ],
+                part3: [
+                    {
+                        id: 'p3_1',
+                        number: 1,
+                        content: 'Một con lắc đơn có chiều dài $L = 1\text{ m}$ dao động tại nơi có $g = 9.87 \approx \pi^2\text{ m/s}^2$. Chu kỳ dao động của con lắc đơn bằng bao nhiêu giây?',
+                        answer: '2',
+                        explanation: '$T = 2\pi \sqrt{L/g} = 2\pi \sqrt{1/\pi^2} = 2\text{ giây}$.'
+                    }
+                ]
+            },
+            {
+                id: 'hoa_vip_2027_01',
+                isVip: true, // ĐỀ VIP ELITE
+                title: 'Đề Thi Chuyên Đề Hóa Học Hữu Cơ & Thực Nghiệm - Chuẩn BGD 2027',
+                subject: 'Hóa Học',
+                time: 50,
+                qCount: '18 câu (3 Phần)',
+                part1: [
+                    {
+                        id: 'p1_1_hoa',
+                        number: 1,
+                        content: 'Hợp chất nào sau đây thuộc loại este no, đơn chức, mạch hở?',
+                        options: [
+                            { key: 'A', text: 'HCOOCH3' },
+                            { key: 'B', text: 'CH2=CHCOOCH3' },
+                            { key: 'C', text: 'CH3COOH' },
+                            { key: 'D', text: '(HCOO)2C2H4' }
+                        ],
+                        answer: 'A',
+                        explanation: 'HCOOCH3 là Methyl formate có công thức C2H4O2 thuộc este no đơn chức mạch hở.'
+                    }
+                ],
+                part2: [
+                    {
+                        id: 'p2_1_hoa',
+                        number: 1,
+                        content: 'Tiến hành thí nghiệm xà phòng hóa chất béo trong phòng thí nghiệm:',
+                        items: [
+                            { key: 'a', text: 'Thêm dung dịch NaCl bão hòa để làm tăng tỉ trọng và tách xà phòng nổi lên trên.' },
+                            { key: 'b', text: 'Sau bước 2, thu được dung dịch đồng nhất.' },
+                            { key: 'c', text: 'Vai trò của NaCl bão hòa là làm chất xúc tác cho phản ứng thủy phân.' },
+                            { key: 'd', text: 'Sản phẩm thu được sau phản ứng gồm muối sodium của axit béo và glycerol.' }
+                        ],
+                        answers: { a: true, b: false, c: false, d: true },
+                        explanation: 'NaCl bão hòa làm giảm độ tan của xà phòng khiến nó tách lớp, không phải là chất xúc tác.'
+                    }
+                ],
+                part3: [
+                    {
+                        id: 'p3_1_hoa',
+                        number: 1,
+                        content: 'Đốt cháy hoàn toàn $m$ gram hỗn hợp gồm Glucose và Fructose cần vừa đủ $8.96$ lít $O_2$ (đktc). Giá trị của $m$ bằng bao nhiêu gram?',
+                        answer: '12',
+                        explanation: '$C_6H_{12}O_6 + 6O_2 \rightarrow 6CO_2 + 6H_2O$. Ta có $n_{C6H12O6} = 1/6 n_{O2} = 0.4 / 6 \Rightarrow m = (0.4/6) \times 180 = 12\text{ g}$.'
+                    }
+                ]
+            }
+        ];
+
+        // BIẾN TOÀN CỤC PHÒNG THI & TÀI KHOẢN
+        let currentExam = null;
+        let allQuestionsList = [];
+        let currentQIndex = 0;
+        let userAnswers = {};
+        let examTimerInterval = null;
+        let remainingSeconds = 0;
+        let activeFilter = 'all';
+
+        // Kiểm tra quyền Elite của người dùng
+        function isEliteUser() {
+            return localStorage.getItem('primux_user_is_elite') === 'true';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('pageOverlay')?.classList.add('hidden-overlay');
+            renderUserSidebarInfo();
+            renderExamsList();
+        });
+
+        function renderUserSidebarInfo() {
+            const name = localStorage.getItem('primux_user_name') || 'Nguyễn Anh Hào';
+            const xp = localStorage.getItem('primux_user_xp') || '0';
+            const isElite = isEliteUser();
+
+            document.getElementById('userNameSidebar').innerText = name;
+            document.getElementById('userAvatar').innerText = name.trim().charAt(0).toUpperCase();
+            document.getElementById('userXpSidebar').innerText = `${xp} XP`;
+            
+            const roleBadge = document.getElementById('userRoleBadge');
+            const toggleBtnText = document.getElementById('toggleEliteBtnText');
+
+            if (isElite) {
+                roleBadge.className = "text-[9px] font-black px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 uppercase border border-amber-300";
+                roleBadge.innerText = "ELITE VIP";
+                toggleBtnText.innerText = "Hạ xuống Free";
+            } else {
+                roleBadge.className = "text-[9px] font-black px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 uppercase";
+                roleBadge.innerText = "FREE";
+                toggleBtnText.innerText = "Thử làm Elite";
+            }
+        }
+
+        // CHUYỂN ĐỔI BỘ LỌC ĐỀ THI
+        function filterExams(type) {
+            activeFilter = type;
+            ['all', 'free', 'vip'].forEach(t => {
+                const btn = document.getElementById(`filter_${t}`);
+                if (t === type) {
+                    btn.className = t === 'vip' 
+                        ? "px-4 py-2 rounded-xl text-xs font-extrabold transition bg-amber-500 text-blue-950 shadow-sm"
+                        : "px-4 py-2 rounded-xl text-xs font-extrabold transition bg-blue-600 text-white shadow-sm";
+                } else {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-extrabold transition bg-slate-100 text-slate-600 hover:bg-slate-200";
+                }
+            });
+            renderExamsList();
+        }
+
+        // RENDER DANH SÁCH ĐỀ THI HỖ TRỢ ĐỀ FREE VÀ VIP
+        function renderExamsList() {
+            const container = document.getElementById('examsGridContainer');
+            container.innerHTML = '';
+
+            const filtered = REAL_EXAM_DATA.filter(exam => {
+                if (activeFilter === 'free') return !exam.isVip;
+                if (activeFilter === 'vip') return exam.isVip;
+                return true;
+            });
+
+            filtered.forEach(exam => {
+                const isVipCard = exam.isVip;
+                
+                const cardClass = isVipCard 
+                    ? "vip-gradient-card p-6 rounded-3xl card-shadow flex flex-col justify-between hover:-translate-y-1 transition-all relative overflow-hidden"
+                    : "bg-white p-6 rounded-3xl border border-blue-100 card-shadow flex flex-col justify-between hover:-translate-y-1 transition-all";
+
+                const badgeTag = isVipCard
+                    ? `<span class="px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-blue-950 font-black text-[10px] flex items-center gap-1 shadow-sm">
+                        <span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">star</span> ELITE VIP
+                       </span>`
+                    : `<span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-extrabold text-[10px]">Luyện Free</span>`;
+
+                const actionBtn = isVipCard
+                    ? `<button onclick="handleStartExamClick('${exam.id}', true)" class="mt-5 w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:brightness-105 text-blue-950 font-black text-xs shadow-md transition flex items-center justify-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px]">lock_open</span> Mở Phòng Thi VIP Elite
+                       </button>`
+                    : `<button onclick="handleStartExamClick('${exam.id}', false)" class="mt-5 w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-md transition">
+                        Vào Phòng Thi Online
+                       </button>`;
+
+                container.innerHTML += `
+                    <div class="${cardClass}">
+                        ${isVipCard ? '<div class="absolute -right-6 -top-6 w-20 h-20 bg-amber-200/40 rounded-full blur-xl pointer-events-none"></div>' : ''}
+                        <div class="space-y-3 relative z-10">
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-extrabold text-xs">${exam.subject}</span>
+                                    ${badgeTag}
+                                </div>
+                                <span class="text-xs font-bold text-slate-500">${exam.qCount}</span>
+                            </div>
+                            <h3 class="text-base font-black text-blue-950 leading-snug">${exam.title}</h3>
+                            <div class="p-3 bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-100 text-[11px] text-slate-600 space-y-1">
+                                <div class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span> Phần I: Trắc nghiệm 4 lựa chọn</div>
+                                <div class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span> Phần II: Trắc nghiệm Đúng / Sai</div>
+                                <div class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span> Phần III: Trả lời ngắn</div>
+                            </div>
+                        </div>
+                        ${actionBtn}
+                    </div>
+                `;
+            });
+        }
+
+        // KIỂM TRA QUYỀN TRUY CẬP TRƯỚC KHI VÀO ĐỀ THI
+        function handleStartExamClick(examId, isVip) {
+            if (isVip && !isEliteUser()) {
+                openModal('eliteUpgradeModal');
+            } else {
+                startExamSession(examId);
+            }
+        }
+
+        // MÔ PHỎNG NÂNG CẤP ELITE TRONG DEMO
+        function simulateUpgradeToElite() {
+            localStorage.setItem('primux_user_is_elite', 'true');
+            renderUserSidebarInfo();
+            closeModal('eliteUpgradeModal');
+            alert("Chúc mừng! Bạn đã nâng cấp thành công lên tài khoản Primux Elite.");
+            renderExamsList();
+        }
+
+        // NÚT TOGGLE TEST QUYỀN NHANH
+        function toggleEliteStatus() {
+            const current = isEliteUser();
+            localStorage.setItem('primux_user_is_elite', (!current).toString());
+            renderUserSidebarInfo();
+            renderExamsList();
+        }
+
+        // BẮT ĐẦU LÀM BÀI THI
+        function startExamSession(examId) {
+            currentExam = REAL_EXAM_DATA.find(e => e.id === examId);
+            if (!currentExam) return;
+
+            // Phẳng hóa danh sách câu hỏi
+            allQuestionsList = [];
+            
+            (currentExam.part1 || []).forEach(q => allQuestionsList.push({ ...q, partType: 1 }));
+            (currentExam.part2 || []).forEach(q => allQuestionsList.push({ ...q, partType: 2 }));
+            (currentExam.part3 || []).forEach(q => allQuestionsList.push({ ...q, partType: 3 }));
+
+            userAnswers = {};
+            currentQIndex = 0;
+
+            document.getElementById('examLiveTitle').innerText = currentExam.title;
+            document.getElementById('examLiveSubtitle').innerText = `Môn: ${currentExam.subject} · Thời gian: ${currentExam.time} phút`;
+
+            remainingSeconds = currentExam.time * 60;
+            startTimer();
+
+            renderPaletteGrid();
+            renderQuestionContent(0);
+
+            openModal('liveExamModal');
+        }
+
+        // ĐỒNG HỒ ĐẾM NGƯỢC
+        function startTimer() {
+            if (examTimerInterval) clearInterval(examTimerInterval);
+            
+            const timerEl = document.getElementById('examTimer');
+            examTimerInterval = setInterval(() => {
+                remainingSeconds--;
+                if (remainingSeconds <= 0) {
+                    clearInterval(examTimerInterval);
+                    alert("Đã hết thời gian làm bài! Hệ thống tự động nộp bài.");
+                    calculateAndShowResult();
+                    return;
+                }
+                const m = Math.floor(remainingSeconds / 60);
+                const s = remainingSeconds % 60;
+                timerEl.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // RENDER QUESTION PALETTE
+        function renderPaletteGrid() {
+            const p1Container = document.getElementById('paletteGridPart1');
+            const p2Container = document.getElementById('paletteGridPart2');
+            const p3Container = document.getElementById('paletteGridPart3');
+
+            p1Container.innerHTML = '';
+            p2Container.innerHTML = '';
+            p3Container.innerHTML = '';
+
+            let answeredCount = 0;
+
+            allQuestionsList.forEach((q, idx) => {
+                const isCurrent = idx === currentQIndex;
+                const userAns = userAnswers[idx];
+
+                let statusClass = "bg-white text-slate-700 border-slate-300";
+                
+                if (q.partType === 1 || q.partType === 3) {
+                    if (userAns !== undefined && userAns !== '') {
+                        statusClass = "answered";
+                        answeredCount++;
+                    }
+                } else if (q.partType === 2) {
+                    const filled = userAns ? Object.keys(userAns).length : 0;
+                    if (filled === 4) {
+                        statusClass = "answered";
+                        answeredCount++;
+                    } else if (filled > 0) {
+                        statusClass = "partially-answered";
+                    }
+                }
+
+                const btnHtml = `
+                    <button onclick="jumpToQuestion(${idx})" id="palette_btn_${idx}" class="q-palette-btn shrink-0 w-8 h-8 rounded-lg border text-xs font-bold flex items-center justify-center ${statusClass} ${isCurrent ? 'active' : ''}">
+                        ${idx + 1}
+                    </button>
+                `;
+
+                if (q.partType === 1) p1Container.innerHTML += btnHtml;
+                else if (q.partType === 2) p2Container.innerHTML += btnHtml;
+                else if (q.partType === 3) p3Container.innerHTML += btnHtml;
+            });
+
+            document.getElementById('answeredCounter').innerText = `${answeredCount}/${allQuestionsList.length} đã làm`;
+        }
+
+        // RENDER NỘI DUNG CÂU HỎI THEO FORM
+        function renderQuestionContent(index) {
+            currentQIndex = index;
+            const q = allQuestionsList[index];
+            const area = document.getElementById('singleQuestionContentArea');
+            
+            document.getElementById('currentQNumberIndicator').innerText = `Câu ${index + 1} / ${allQuestionsList.length}`;
+            document.getElementById('btnPrevQ').disabled = index === 0;
+            document.getElementById('btnNextQ').disabled = index === allQuestionsList.length - 1;
+
+            renderPaletteGrid();
+
+            let headerBadge = '';
+            if (q.partType === 1) headerBadge = `<span class="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-[11px] font-black uppercase">Phần I: Câu ${q.number} (4 Lựa chọn)</span>`;
+            else if (q.partType === 2) headerBadge = `<span class="px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-[11px] font-black uppercase">Phần II: Câu ${q.number} (Trắc nghiệm Đúng/Sai)</span>`;
+            else if (q.partType === 3) headerBadge = `<span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-[11px] font-black uppercase">Phần III: Câu ${q.number} (Trả lời ngắn)</span>`;
+
+            let bodyHtml = '';
+
+            // FORM PHẦN I: ABCD
+            if (q.partType === 1) {
+                const currentSelection = userAnswers[index] || '';
+                bodyHtml = `
+                    <div class="space-y-4">
+                        <div class="text-sm md:text-base font-bold text-blue-950 leading-relaxed">${q.content}</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                            ${q.options.map(opt => `
+                                <label class="flex items-center gap-3 p-4 rounded-2xl border ${currentSelection === opt.key ? 'border-blue-600 bg-blue-50/80 ring-2 ring-blue-500/20' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'} cursor-pointer transition">
+                                    <input type="radio" name="p1_opt_${index}" value="${opt.key}" ${currentSelection === opt.key ? 'checked' : ''} onchange="saveAnswerPart1(${index}, '${opt.key}')" class="w-4 h-4 text-blue-600"/>
+                                    <span class="text-xs md:text-sm font-medium"><b>${opt.key}.</b> ${opt.text}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } 
+            // FORM PHẦN II: ĐÚNG / SAI 4 Ý
+            else if (q.partType === 2) {
+                const currentAns = userAnswers[index] || {};
+                bodyHtml = `
+                    <div class="space-y-4">
+                        <div class="text-sm md:text-base font-bold text-blue-950 leading-relaxed">${q.content}</div>
+                        <div class="border border-slate-200 rounded-2xl overflow-hidden divide-y divide-slate-100">
+                            ${q.items.map(item => `
+                                <div class="p-4 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div class="text-xs md:text-sm font-medium text-slate-800"><b>${item.key})</b> ${item.text}</div>
+                                    <div class="flex items-center gap-4 shrink-0">
+                                        <label class="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
+                                            <input type="radio" name="p2_item_${index}_${item.key}" value="true" ${currentAns[item.key] === true ? 'checked' : ''} onchange="saveAnswerPart2(${index}, '${item.key}', true)" class="w-4 h-4 text-emerald-600"/>
+                                            ĐÚNG
+                                        </label>
+                                        <label class="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-red-700 bg-red-50 px-3 py-1.5 rounded-xl border border-red-200">
+                                            <input type="radio" name="p2_item_${index}_${item.key}" value="false" ${currentAns[item.key] === false ? 'checked' : ''} onchange="saveAnswerPart2(${index}, '${item.key}', false)" class="w-4 h-4 text-red-600"/>
+                                            SAI
+                                        </label>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            // FORM PHẦN III: TRẢ LỜI NGẮN
+            else if (q.partType === 3) {
+                const currentText = userAnswers[index] || '';
+                bodyHtml = `
+                    <div class="space-y-4">
+                        <div class="text-sm md:text-base font-bold text-blue-950 leading-relaxed">${q.content}</div>
+                        <div class="p-5 bg-amber-50/60 rounded-2xl border border-amber-200 space-y-3">
+                            <label class="block text-xs font-extrabold text-amber-900 uppercase">Ô Nhập Điền Đáp Số:</label>
+                            <input type="text" id="shortInput_${index}" value="${currentText}" oninput="saveAnswerPart3(${index}, this.value)" placeholder="Ví dụ: 4 hoặc -2,5" class="w-full md:w-64 p-3 rounded-xl border border-slate-300 font-mono text-base font-bold focus:ring-2 focus:ring-blue-600 focus:border-blue-600"/>
+                            <div class="text-[11px] text-slate-500">Chỉ điền số hoặc ký hiệu âm (-), dấu phẩy (,). Không viết kèm đơn vị.</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            area.innerHTML = `
+                <div>${headerBadge}</div>
+                ${bodyHtml}
+                <div id="explanationBox_${index}" class="hidden p-4 rounded-2xl bg-blue-50 border border-blue-200 text-xs leading-relaxed text-blue-900 mt-4"></div>
+            `;
+        }
+
+        // LƯU ĐÁP ÁN
+        function saveAnswerPart1(qIdx, val) {
+            userAnswers[qIdx] = val;
+            renderPaletteGrid();
+        }
+
+        function saveAnswerPart2(qIdx, itemKey, val) {
+            if (!userAnswers[qIdx]) userAnswers[qIdx] = {};
+            userAnswers[qIdx][itemKey] = val;
+            renderPaletteGrid();
+        }
+
+        function saveAnswerPart3(qIdx, val) {
+            userAnswers[qIdx] = val.trim();
+            renderPaletteGrid();
+        }
+
+        function jumpToQuestion(idx) {
+            renderQuestionContent(idx);
+        }
+
+        function navigateQuestion(step) {
+            const nextIdx = currentQIndex + step;
+            if (nextIdx >= 0 && nextIdx < allQuestionsList.length) {
+                renderQuestionContent(nextIdx);
+            }
+        }
+
+        function confirmSubmitEarly() {
+            if (confirm("Bạn có chắc chắn muốn nộp bài thi ngay bây giờ không?")) {
+                calculateAndShowResult();
+            }
+        }
+
+        // TÍNH ĐIỂM THEO CHUẨN QUY ĐỊNH BỘ GD&ĐT 2027
+        function calculateAndShowResult() {
+            if (examTimerInterval) clearInterval(examTimerInterval);
+
+            let scorePart1 = 0; 
+            let scorePart2 = 0; 
+            let scorePart3 = 0; 
+
+            allQuestionsList.forEach((q, idx) => {
+                const userAns = userAnswers[idx];
+
+                if (q.partType === 1) {
+                    if (userAns === q.answer) scorePart1 += 0.25;
+                } else if (q.partType === 2) {
+                    if (userAns) {
+                        let correctItems = 0;
+                        ['a', 'b', 'c', 'd'].forEach(k => {
+                            if (userAns[k] === q.answers[k]) correctItems++;
+                        });
+                        
+                        if (correctItems === 1) scorePart2 += 0.1;
+                        else if (correctItems === 2) scorePart2 += 0.25;
+                        else if (correctItems === 3) scorePart2 += 0.5;
+                        else if (correctItems === 4) scorePart2 += 1.0;
+                    }
+                } else if (q.partType === 3) {
+                    if (userAns && userAns.replace(',', '.') === q.answer.replace(',', '.')) {
+                        scorePart3 += 0.5;
+                    }
+                }
+            });
+
+            const totalScore = (scorePart1 + scorePart2 + scorePart3).toFixed(2);
+
+            // Cập nhật UI kết quả
+            document.getElementById('resultScore').innerText = totalScore;
+            document.getElementById('scorePart1').innerText = `${scorePart1.toFixed(2)} đ`;
+            document.getElementById('scorePart2').innerText = `${scorePart2.toFixed(2)} đ`;
+            document.getElementById('scorePart3').innerText = `${scorePart3.toFixed(2)} đ`;
+
+            // Cộng XP Tích lũy
+            let currentXP = parseInt(localStorage.getItem('primux_user_xp') || '0') + 50;
+            let currentExamsDone = parseInt(localStorage.getItem('primux_exams_done') || '0') + 1;
+            
+            localStorage.setItem('primux_user_xp', currentXP);
+            localStorage.setItem('primux_exams_done', currentExamsDone);
+            localStorage.setItem('primux_score_current', totalScore);
+
+            renderUserSidebarInfo();
+            openModal('resultModal');
+        }
+
+        // XEM LỜI GIẢI CHI TIẾT
+        function reviewExplanations() {
+            closeModal('resultModal');
+            renderQuestionContent(0);
+
+            allQuestionsList.forEach((q, idx) => {
+                const expBox = document.getElementById(`explanationBox_${idx}`);
+                if (expBox) {
+                    expBox.classList.remove('hidden');
+                    let correctAnsText = '';
+                    if (q.partType === 1) correctAnsText = `Đáp án đúng: ${q.answer}`;
+                    else if (q.partType === 2) correctAnsText = `Đáp án đúng: a-${q.answers.a ? 'Đúng':'Sai'}, b-${q.answers.b ? 'Đúng':'Sai'}, c-${q.answers.c ? 'Đúng':'Sai'}, d-${q.answers.d ? 'Đúng':'Sai'}`;
+                    else if (q.partType === 3) correctAnsText = `Đáp án đúng: ${q.answer}`;
+
+                    expBox.innerHTML = `<b class="text-emerald-700 block mb-1">${correctAnsText}</b><b>Lời giải chi tiết:</b> ${q.explanation || 'Đang cập nhật giải thích.'}`;
+                }
+            });
+        }
+
+        function openModal(id) { document.getElementById(id)?.classList.add('active'); }
+        function closeModal(id) { document.getElementById(id)?.classList.remove('active'); }
+    </script>
+</body>
+</html>
